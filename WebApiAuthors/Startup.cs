@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 namespace WebApiAuthors
@@ -26,6 +27,35 @@ namespace WebApiAuthors
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.Use(async (context, next) =>
+            {
+                using (var ms = new MemoryStream())
+                {
+                    var originalBodyResponse = context.Response.Body;
+                    context.Response.Body = ms;
+
+                    await next.Invoke();
+
+                    ms.Seek(0, SeekOrigin.Begin);
+                    string response = new StreamReader(ms).ReadToEnd();
+                    ms.Seek(0, SeekOrigin.Begin);
+
+                    await ms.CopyToAsync(originalBodyResponse);
+                    context.Response.Body = originalBodyResponse;
+
+
+                }
+            });
+
+            //Middleware example
+            app.Map("/route1", app =>
+            {
+                app.Run(async context =>
+                {
+                    await context.Response.WriteAsync("Estoy interceptando la tuberia");
+                });
+            });            
+
             // Configure the HTTP request pipeline.
             if (env.IsDevelopment())
             {

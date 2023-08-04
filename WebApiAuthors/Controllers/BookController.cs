@@ -15,13 +15,13 @@ namespace WebApiAuthors.Controllers
             _context = context;
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}")] //Get: api/book/{id}
         public async Task<ActionResult<Book>> Get(int id)
         {
             return await _context.Book.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        [HttpPost]
+        [HttpPost] //Post: api/book
         public async Task<ActionResult> Post(Book book)
         {
             var authorExists = await _context.Author.AnyAsync(a => a.Id == book.AuthorId);
