@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebApiAuthors.Filters;
 using WebApiAuthors.Middlewares;
-using WebApiAuthors.Services;
 
 namespace WebApiAuthors
 {
@@ -26,29 +24,16 @@ namespace WebApiAuthors
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddTransient<MyActionFilter>();
-            services.AddHostedService<WriteToFile>();
-
-            services.AddResponseCaching();
-
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddAutoMapper(typeof(Startup));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            //app.UseMiddleware<ResponseHttpLogMiddleware>();
-            app.UseResponseHttpLog();
-
-            //Middleware example
-            app.Map("/route1", app =>
-            {
-                app.Run(async context =>
-                {
-                    await context.Response.WriteAsync("Estoy interceptando la tuberia");
-                });
-            });            
+            app.UseResponseHttpLog();          
 
             // Configure the HTTP request pipeline.
             if (env.IsDevelopment())
@@ -60,8 +45,6 @@ namespace WebApiAuthors
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseResponseCaching();
 
             app.UseAuthorization();
 
