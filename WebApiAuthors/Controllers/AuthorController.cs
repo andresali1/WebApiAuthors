@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiAuthors.Entities;
+using WebApiAuthors.Filters;
 
 namespace WebApiAuthors.Controllers
 {
@@ -21,19 +22,25 @@ namespace WebApiAuthors.Controllers
         [HttpGet] //Get: api/author
         [HttpGet("list")] //Get: api/author/list
         [HttpGet("/list")] //Get: /list => ignores the controller base route
+        [ResponseCache(Duration = 10)]
         public async Task<ActionResult<List<Author>>> Get()
         {
+            //For testing the Exception filter Uncomment
+            //throw new NotImplementedException();
+
             logger.LogInformation("Estamos obteniendo los autores");
             return await _context.Author.Include(a => a.Books).ToListAsync();
         }
 
         [HttpGet("first")] //Get: api/author/first
+        [ServiceFilter(typeof(MyActionFilter))]
         public async Task<ActionResult<Author>> FirstAuthor()
         {
             return await _context.Author.Include(a => a.Books).FirstOrDefaultAsync();
         }
 
         [HttpGet("{id:int}")] //Get: api/author/{id}
+        [ServiceFilter(typeof(MyActionFilter))]
         public async Task<ActionResult<Author>> Get(int id)
         {
             var author = await _context.Author.Include(a => a.Books).FirstOrDefaultAsync(a => a.Id == id);

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using WebApiAuthors.Filters;
+using WebApiAuthors.Middlewares;
+using WebApiAuthors.Services;
 
 namespace WebApiAuthors
 {
@@ -16,36 +19,27 @@ namespace WebApiAuthors
         public void ConfigureServices(IServiceCollection services)
         {
             // Add services to the container.
-            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(ExceptionFilter));
+            }).AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddTransient<MyActionFilter>();
+            services.AddHostedService<WriteToFile>();
+
+            services.AddResponseCaching();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            app.Use(async (context, next) =>
-            {
-                using (var ms = new MemoryStream())
-                {
-                    var originalBodyResponse = context.Response.Body;
-                    context.Response.Body = ms;
-
-                    await next.Invoke();
-
-                    ms.Seek(0, SeekOrigin.Begin);
-                    string response = new StreamReader(ms).ReadToEnd();
-                    ms.Seek(0, SeekOrigin.Begin);
-
-                    await ms.CopyToAsync(originalBodyResponse);
-                    context.Response.Body = originalBodyResponse;
-
-
-                }
-            });
+            //app.UseMiddleware<ResponseHttpLogMiddleware>();
+            app.UseResponseHttpLog();
 
             //Middleware example
             app.Map("/route1", app =>
@@ -66,6 +60,8 @@ namespace WebApiAuthors
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseResponseCaching();
 
             app.UseAuthorization();
 
