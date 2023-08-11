@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using WebApiAuthors.Validations;
 
 namespace WebApiAuthors.DTOs
 {
-    public class BookCreationDTO
+    public class BookPatchDTO
     {
         [Display(Name = "Título")]
         [Required(ErrorMessage = "El campo {0} es requerido")]
@@ -13,7 +12,5 @@ namespace WebApiAuthors.DTOs
         public string Title { get; set; }
 
         public DateTime PublicationDate { get; set; }
-
-        public List<int> AuthorIds { get; set; }
     }
 }

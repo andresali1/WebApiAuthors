@@ -13,6 +13,8 @@ namespace WebApiAuthors.Entities
         [StringLength(maximumLength: 250, ErrorMessage = "El campo {0} debe tener máximo {1} caracteres")]
         public string Title { get; set; }
 
+        public DateTime? PublicationDate { get; set; }
+
         public List<Comment> Comments { get; set; }
 
         public List<Author_Book> Author_Book { get; set; }

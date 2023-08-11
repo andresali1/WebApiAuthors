@@ -20,7 +20,8 @@ namespace WebApiAuthors
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(ExceptionFilter));
-            }).AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            }).AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+              .AddNewtonsoftJson();
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
