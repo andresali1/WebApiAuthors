@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiAuthors.DTOs;
@@ -8,6 +10,7 @@ namespace WebApiAuthors.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] //[controller] is changed for the prefix of the controller => route: 'api/Author'
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AuthorController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -20,6 +23,7 @@ namespace WebApiAuthors.Controllers
         }
 
         [HttpGet] //Get: api/author
+        [AllowAnonymous]
         public async Task<ActionResult<List<AuthorDTO>>> Get()
         {
             //For testing the Exception filter Uncomment
