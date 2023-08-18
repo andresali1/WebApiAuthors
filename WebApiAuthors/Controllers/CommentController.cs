@@ -29,7 +29,7 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="bookId">Id of the book</param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet(Name = "GetCommentsBook")]
         public async Task<ActionResult<List<CommentDTO>>> Get(int bookId)
         {
             var bookExists = await _context.Book.AnyAsync(b => b.Id == bookId);
@@ -67,7 +67,7 @@ namespace WebApiAuthors.Controllers
         /// <param name="bookId">Id of the book to comment</param>
         /// <param name="commentCreationDTO">CommentCreationDTO object with the data</param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost(Name = "createComment")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post(int bookId, CommentCreationDTO commentCreationDTO)
         {
@@ -102,7 +102,7 @@ namespace WebApiAuthors.Controllers
         /// <param name="id">Id of the comment</param>
         /// <param name="commentCreationDTO">CommentCreationDTO object with the data</param>
         /// <returns></returns>
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "updateComment")]
         public async Task<ActionResult> Put(int bookId, int id, CommentCreationDTO commentCreationDTO)
         {
             var bookExists = await _context.Book.AnyAsync(b => b.Id == bookId);

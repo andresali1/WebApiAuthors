@@ -8,7 +8,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebApiAuthors.DTOs;
-using WebApiAuthors.Services;
 
 namespace WebApiAuthors.Controllers
 {
@@ -19,12 +18,10 @@ namespace WebApiAuthors.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly HashService _hashService;
         private readonly IDataProtector _dataProtector;
 
         public AccountController(UserManager<IdentityUser> userManager, IConfiguration configuration,
-                                 SignInManager<IdentityUser> signInManager, IDataProtectionProvider dataProtectionProvider,
-                                 HashService hashService)
+                                 SignInManager<IdentityUser> signInManager, IDataProtectionProvider dataProtectionProvider)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -32,67 +29,14 @@ namespace WebApiAuthors.Controllers
 
             //For Encryption Examples
             _dataProtector = dataProtectionProvider.CreateProtector("unique_value_maybe_secret");
-            _hashService = hashService;
-        }
-
-        #region
-        //Coding example to create a hash
-        [HttpGet("hash/{plaintext}")]
-        public ActionResult CreateHash(string plaintext)
-        {
-            var restul1 = _hashService.Hash(plaintext);
-            var restul2 = _hashService.Hash(plaintext);
-
-            return Ok(new
-            {
-                textoPlano = plaintext,
-                hash1 = restul1,
-                hash2 = restul2
-            });
-        }
-
-        //Coding examples to Enctyption
-        [HttpGet("encrypt")]
-        public ActionResult Encrypt()
-        {
-            var plainText = "Welcome";
-            var ciphertext = _dataProtector.Protect(plainText);
-            var decryptedText = _dataProtector.Unprotect(ciphertext);
-
-            return Ok(new
-            {
-                textoPlano = plainText,
-                textoCifrado = ciphertext,
-                textoDesencriptado = decryptedText
-            });
-        }
-
-        //Encription with expiration date to payload to decrypt
-        [HttpGet("encryptByTime")]
-        public ActionResult EncryptByTime()
-        {
-            var timeLimitedProtector = _dataProtector.ToTimeLimitedDataProtector();
-
-            var plainText = "Test Message";
-            var ciphertext = timeLimitedProtector.Protect(plainText, lifetime: TimeSpan.FromSeconds(5));
-            Thread.Sleep(6000);
-            var decryptedText = timeLimitedProtector.Unprotect(ciphertext);
-
-            return Ok(new
-            {
-                textoPlano = plainText,
-                textoCifrado = ciphertext,
-                textoDesencriptado = decryptedText
-            });
-        }
-        #endregion
+        }        
 
         /// <summary>
         /// Method to Register a New User
         /// </summary>
         /// <param name="userCredentials">UserCredentials object with data</param>
         /// <returns></returns>
-        [HttpPost("register")] // api/account/register
+        [HttpPost("register", Name = "registerUser")] // api/account/register
         public async Task<ActionResult<AuthenticationResponse>> Register(UserCredentials userCredentials)
         {
             var user = new IdentityUser { UserName = userCredentials.Email, Email = userCredentials.Email };
@@ -113,7 +57,7 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="userCredentials">UserCredentials object with data</param>
         /// <returns></returns>
-        [HttpPost("login")]
+        [HttpPost("login", Name = "loginUser")]
         public async Task<ActionResult<AuthenticationResponse>> Login(UserCredentials userCredentials)
         {
             var result = await _signInManager.PasswordSignInAsync(userCredentials.Email, userCredentials.Password, isPersistent: false, lockoutOnFailure: false);
@@ -132,7 +76,7 @@ namespace WebApiAuthors.Controllers
         /// Method used to renew atoken if expires
         /// </summary>
         /// <returns></returns>
-        [HttpGet("RenewToken")]
+        [HttpGet("RenewToken", Name = "renewToken")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<AuthenticationResponse>> Renew()
         {
@@ -183,7 +127,7 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="adminEditDTO">AdminEditDTO with data</param>
         /// <returns></returns>
-        [HttpPost("BecomeAdmin")]
+        [HttpPost("BecomeAdmin", Name = "becomeAdmin")]
         public async Task<ActionResult> BecomeAdmin(AdminEditDTO adminEditDTO)
         {
             var user = await _userManager.FindByEmailAsync(adminEditDTO.Email);
@@ -196,7 +140,7 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="adminEditDTO">AdminEditDTO with data</param>
         /// <returns></returns>
-        [HttpPost("RemoveAdmin")]
+        [HttpPost("RemoveAdmin", Name = "removeAdmin")]
         public async Task<ActionResult> RemoveAdmin(AdminEditDTO adminEditDTO)
         {
             var user = await _userManager.FindByEmailAsync(adminEditDTO.Email);

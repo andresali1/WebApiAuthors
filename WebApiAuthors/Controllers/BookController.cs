@@ -48,7 +48,7 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="bookCreationDTO">BookCreationDTO object with data</param>
         /// <returns></returns>
-        [HttpPost] //Post: api/book
+        [HttpPost(Name = "createBook")] //Post: api/book
         public async Task<ActionResult> Post(BookCreationDTO bookCreationDTO)
         {
             if(bookCreationDTO.AuthorIds == null)
@@ -83,7 +83,7 @@ namespace WebApiAuthors.Controllers
         /// <param name="id">Id of the book</param>
         /// <param name="bookCreationDTO">BookCreationDTO object with the data</param>
         /// <returns></returns>
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}", Name = "updateBook")]
         public async Task<ActionResult> Put(int id, BookCreationDTO bookCreationDTO)
         {
             var bookDb = await _context.Book
@@ -125,7 +125,7 @@ namespace WebApiAuthors.Controllers
         /// <param name="id">Id of the book</param>
         /// <param name="patchDocument">Json object with the data to update</param>
         /// <returns></returns>
-        [HttpPatch("{id:int}")]
+        [HttpPatch("{id:int}", Name = "patchBook")]
         public async Task<ActionResult> Patch(int id, JsonPatchDocument<BookPatchDTO> patchDocument)
         {
             if (patchDocument == null)
@@ -163,7 +163,7 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="id">Id of the book</param>
         /// <returns></returns>
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name = "deleteBook")]
         public async Task<ActionResult> Delete(int id)
         {
             var exists = await _context.Book.AnyAsync(y => y.Id == id);

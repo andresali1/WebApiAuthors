@@ -2,9 +2,9 @@
 
 namespace WebApiAuthors.DTOs
 {
-    public class AuthorDTO
+    public class AuthorDTO : Resource
     {
         public int Id { get; set; }
-        public string A_Name { get; set; }        
+        public string A_Name { get; set; }       
     }
 }

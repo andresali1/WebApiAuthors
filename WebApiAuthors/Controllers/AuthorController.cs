@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiAuthors.DTOs;
 using WebApiAuthors.Entities;
+using WebApiAuthors.Utilities;
 
 namespace WebApiAuthors.Controllers
 {
@@ -15,19 +16,26 @@ namespace WebApiAuthors.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IAuthorizationService _authorizationService;
 
-        public AuthorController(ApplicationDbContext context, IMapper mapper)
+        public AuthorController(
+            ApplicationDbContext context,
+            IMapper mapper,
+            IAuthorizationService authorizationService
+        )
         {
             _context = context;
             _mapper = mapper;
+            _authorizationService = authorizationService;
         }
 
         /// <summary>
         /// Method to get all the authors in db
         /// </summary>
         /// <returns></returns>
-        [HttpGet] //Get: api/author
+        [HttpGet(Name = "getAuthors")] //Get: api/author
         [AllowAnonymous]
+        [ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
         public async Task<ActionResult<List<AuthorDTO>>> Get()
         {
             //For testing the Exception filter Uncomment
@@ -38,6 +46,8 @@ namespace WebApiAuthors.Controllers
         }
 
         [HttpGet("{id:int}", Name = "getAuthor")] //Get: api/author/{id}
+        [AllowAnonymous]
+        [ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
         public async Task<ActionResult<AuthorDTO_Book>> Get(int id)
         {
             var author = await _context.Author
@@ -50,16 +60,18 @@ namespace WebApiAuthors.Controllers
                 return NotFound();
             }
 
-            return _mapper.Map<AuthorDTO_Book>(author);
-        }
+            var dto = _mapper.Map<AuthorDTO_Book>(author);
+
+            return dto;
+        }        
 
         /// <summary>
         /// Method to get an author by its name
         /// </summary>
-        /// <param name="name">NAme of the author</param>
+        /// <param name="name">Name of the author</param>
         /// <returns></returns>
-        [HttpGet("{name}")] //Get: api/author/{name}
-        public async Task<ActionResult<List<AuthorDTO>>> Get(string name)
+        [HttpGet("{name}", Name = "getAuthorByName")] //Get: api/author/{name}
+        public async Task<ActionResult<List<AuthorDTO>>> GetByName(string name)
         {
             var authors = await _context.Author.Where(a => a.A_Name.Contains(name)).ToListAsync();
 
@@ -76,7 +88,7 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="authorCreationDTO">AuthorCreationDTO object with data</param>
         /// <returns></returns>
-        [HttpPost] //Post: api/author
+        [HttpPost(Name = "createAuthor")] //Post: api/author
         public async Task<ActionResult> Post([FromBody] AuthorCreationDTO authorCreationDTO)
         {
             var sameNameExists = await _context.Author.AnyAsync(a => a.A_Name == authorCreationDTO.A_Name);
@@ -102,7 +114,7 @@ namespace WebApiAuthors.Controllers
         /// <param name="authorCreationDTO">AuthorCreationDTO object with the data</param>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPut("{id:int}")] //Put: api/author/{id}
+        [HttpPut("{id:int}", Name = "updateAuthor")] //Put: api/author/{id}
         public async Task<ActionResult> Put(AuthorCreationDTO authorCreationDTO, int id)
         {
             bool exists = await _context.Author.AnyAsync(x => x.Id == id);
@@ -126,7 +138,7 @@ namespace WebApiAuthors.Controllers
         /// </summary>
         /// <param name="id">Id of the author</param>
         /// <returns></returns>
-        [HttpDelete("{id:int}")] //Delete: api/author/{id}
+        [HttpDelete("{id:int}", Name = "deleteAuthor")] //Delete: api/author/{id}
         public async Task<ActionResult> Delete(int id)
         {
             var exists = await _context.Author.AnyAsync(y => y.Id == id);
