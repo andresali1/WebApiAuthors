@@ -10,7 +10,7 @@ namespace WebApiAuthors.Controllers
 {
     [ApiController]
     [Route("api/[controller]")] //[controller] is changed for the prefix of the controller => route: 'api/Author'
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
     public class AuthorController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -22,6 +22,10 @@ namespace WebApiAuthors.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Method to get all the authors in db
+        /// </summary>
+        /// <returns></returns>
         [HttpGet] //Get: api/author
         [AllowAnonymous]
         public async Task<ActionResult<List<AuthorDTO>>> Get()
@@ -49,6 +53,11 @@ namespace WebApiAuthors.Controllers
             return _mapper.Map<AuthorDTO_Book>(author);
         }
 
+        /// <summary>
+        /// Method to get an author by its name
+        /// </summary>
+        /// <param name="name">NAme of the author</param>
+        /// <returns></returns>
         [HttpGet("{name}")] //Get: api/author/{name}
         public async Task<ActionResult<List<AuthorDTO>>> Get(string name)
         {
@@ -62,6 +71,11 @@ namespace WebApiAuthors.Controllers
             return _mapper.Map<List<AuthorDTO>>(authors);
         }
 
+        /// <summary>
+        /// Method to create a new author
+        /// </summary>
+        /// <param name="authorCreationDTO">AuthorCreationDTO object with data</param>
+        /// <returns></returns>
         [HttpPost] //Post: api/author
         public async Task<ActionResult> Post([FromBody] AuthorCreationDTO authorCreationDTO)
         {
@@ -82,6 +96,12 @@ namespace WebApiAuthors.Controllers
             return CreatedAtRoute("getAuthor", new { id = author.Id }, authorDTO);
         }
 
+        /// <summary>
+        /// MEthod to update all the data of an Author
+        /// </summary>
+        /// <param name="authorCreationDTO">AuthorCreationDTO object with the data</param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpPut("{id:int}")] //Put: api/author/{id}
         public async Task<ActionResult> Put(AuthorCreationDTO authorCreationDTO, int id)
         {
@@ -101,6 +121,11 @@ namespace WebApiAuthors.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Method to delete an Author
+        /// </summary>
+        /// <param name="id">Id of the author</param>
+        /// <returns></returns>
         [HttpDelete("{id:int}")] //Delete: api/author/{id}
         public async Task<ActionResult> Delete(int id)
         {

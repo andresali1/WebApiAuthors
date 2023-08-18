@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using WebApiAuthors.Filters;
 using WebApiAuthors.Middlewares;
+using WebApiAuthors.Services;
 
 namespace WebApiAuthors
 {
@@ -81,6 +82,22 @@ namespace WebApiAuthors
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsAdmin", policy => policy.RequireClaim("isAdmin"));
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://www.apirequest.io").AllowAnyMethod().AllowAnyHeader();
+                });
+            });
+
+            services.AddDataProtection();
+            services.AddTransient<HashService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
@@ -97,6 +114,8 @@ namespace WebApiAuthors
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 

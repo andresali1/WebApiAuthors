@@ -24,6 +24,11 @@ namespace WebApiAuthors.Controllers
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Method to get a comment by the book id
+        /// </summary>
+        /// <param name="bookId">Id of the book</param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<List<CommentDTO>>> Get(int bookId)
         {
@@ -38,6 +43,11 @@ namespace WebApiAuthors.Controllers
             return _mapper.Map<List<CommentDTO>>(comments);
         }
 
+        /// <summary>
+        /// Method to get a comment by its Id
+        /// </summary>
+        /// <param name="id">Id of the comment</param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "getComment")]
         public async Task<ActionResult<CommentDTO>> GetById(int id)
         {
@@ -51,6 +61,12 @@ namespace WebApiAuthors.Controllers
             return _mapper.Map<CommentDTO>(comment);
         }
 
+        /// <summary>
+        /// Method to create a comment
+        /// </summary>
+        /// <param name="bookId">Id of the book to comment</param>
+        /// <param name="commentCreationDTO">CommentCreationDTO object with the data</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult> Post(int bookId, CommentCreationDTO commentCreationDTO)
@@ -79,6 +95,13 @@ namespace WebApiAuthors.Controllers
             return CreatedAtRoute("getComment", new { id = comment.Id, bookId }, commentDTO);
         }
 
+        /// <summary>
+        /// Method to update all the data of a comment
+        /// </summary>
+        /// <param name="bookId">Id of the book</param>
+        /// <param name="id">Id of the comment</param>
+        /// <param name="commentCreationDTO">CommentCreationDTO object with the data</param>
+        /// <returns></returns>
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int bookId, int id, CommentCreationDTO commentCreationDTO)
         {

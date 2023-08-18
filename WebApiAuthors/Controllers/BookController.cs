@@ -20,6 +20,11 @@ namespace WebApiAuthors.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Method to get a book by its Id
+        /// </summary>
+        /// <param name="id">Id of the book</param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "getBook")] //Get: api/book/{id}
         public async Task<ActionResult<BookDTO_Author>> Get(int id)
         {
@@ -38,6 +43,11 @@ namespace WebApiAuthors.Controllers
             return _mapper.Map<BookDTO_Author>(book);
         }
 
+        /// <summary>
+        /// Method to create a new book
+        /// </summary>
+        /// <param name="bookCreationDTO">BookCreationDTO object with data</param>
+        /// <returns></returns>
         [HttpPost] //Post: api/book
         public async Task<ActionResult> Post(BookCreationDTO bookCreationDTO)
         {
@@ -67,6 +77,12 @@ namespace WebApiAuthors.Controllers
             return CreatedAtRoute("getBook", new { id = book.Id }, bookDTO);
         }
 
+        /// <summary>
+        /// Method to update all the data of a book
+        /// </summary>
+        /// <param name="id">Id of the book</param>
+        /// <param name="bookCreationDTO">BookCreationDTO object with the data</param>
+        /// <returns></returns>
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int id, BookCreationDTO bookCreationDTO)
         {
@@ -88,6 +104,10 @@ namespace WebApiAuthors.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Method to order the authors of a book
+        /// </summary>
+        /// <param name="book">Given book</param>
         private void AsignAuthorOrder(Book book)
         {
             if (book.Author_Book != null)
@@ -99,6 +119,12 @@ namespace WebApiAuthors.Controllers
             }
         }
 
+        /// <summary>
+        /// Method to update only needed attributes of a given book
+        /// </summary>
+        /// <param name="id">Id of the book</param>
+        /// <param name="patchDocument">Json object with the data to update</param>
+        /// <returns></returns>
         [HttpPatch("{id:int}")]
         public async Task<ActionResult> Patch(int id, JsonPatchDocument<BookPatchDTO> patchDocument)
         {
@@ -132,6 +158,11 @@ namespace WebApiAuthors.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// MEthod to delete a book
+        /// </summary>
+        /// <param name="id">Id of the book</param>
+        /// <returns></returns>
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
