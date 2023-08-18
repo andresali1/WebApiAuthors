@@ -7,10 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using WebApiAuthors.DTOs;
 using WebApiAuthors.Entities;
 
-namespace WebApiAuthors.Controllers
+namespace WebApiAuthors.Controllers.V1
 {
     [ApiController]
-    [Route("api/book/{bookId:int}/comment")]
+    [Route("api/v1/book/{bookId:int}/comment")]
     public class CommentController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -53,7 +53,7 @@ namespace WebApiAuthors.Controllers
         {
             var comment = await _context.Comment.FirstOrDefaultAsync(c => c.Id == id);
 
-            if(comment == null)
+            if (comment == null)
             {
                 return NotFound();
             }
@@ -80,7 +80,7 @@ namespace WebApiAuthors.Controllers
 
             if (!bookExists)
             {
-                return NotFound();  
+                return NotFound();
             }
 
             var comment = _mapper.Map<Comment>(commentCreationDTO);

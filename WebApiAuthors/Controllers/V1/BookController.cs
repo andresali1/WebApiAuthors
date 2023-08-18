@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using WebApiAuthors.DTOs;
 using WebApiAuthors.Entities;
 
-namespace WebApiAuthors.Controllers
+namespace WebApiAuthors.Controllers.V1
 {
     [ApiController]
-    [Route("api/book")]
+    [Route("api/v1/book")]
     public class BookController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -33,7 +33,7 @@ namespace WebApiAuthors.Controllers
                 .ThenInclude(authorBookDB => authorBookDB.Author)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
-            if(book == null)
+            if (book == null)
             {
                 return NotFound();
             }
@@ -51,7 +51,7 @@ namespace WebApiAuthors.Controllers
         [HttpPost(Name = "createBook")] //Post: api/book
         public async Task<ActionResult> Post(BookCreationDTO bookCreationDTO)
         {
-            if(bookCreationDTO.AuthorIds == null)
+            if (bookCreationDTO.AuthorIds == null)
             {
                 return BadRequest("No se puede crear un libro sin autores");
             }
@@ -60,7 +60,7 @@ namespace WebApiAuthors.Controllers
                 .Where(authorBD => bookCreationDTO.AuthorIds.Contains(authorBD.Id))
                 .Select(x => x.Id).ToListAsync();
 
-            if(bookCreationDTO.AuthorIds.Count != authorIds.Count)
+            if (bookCreationDTO.AuthorIds.Count != authorIds.Count)
             {
                 return BadRequest("No existe uno de los autores enviados");
             }
@@ -90,7 +90,7 @@ namespace WebApiAuthors.Controllers
                 .Include(b => b.Author_Book)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
-            if(bookDb == null)
+            if (bookDb == null)
             {
                 return NotFound();
             }

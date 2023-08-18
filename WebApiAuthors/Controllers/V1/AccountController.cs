@@ -9,10 +9,10 @@ using System.Security.Claims;
 using System.Text;
 using WebApiAuthors.DTOs;
 
-namespace WebApiAuthors.Controllers
+namespace WebApiAuthors.Controllers.V1
 {
     [ApiController]
-    [Route("api/account")]
+    [Route("api/v1/account")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
@@ -29,7 +29,7 @@ namespace WebApiAuthors.Controllers
 
             //For Encryption Examples
             _dataProtector = dataProtectionProvider.CreateProtector("unique_value_maybe_secret");
-        }        
+        }
 
         /// <summary>
         /// Method to Register a New User
