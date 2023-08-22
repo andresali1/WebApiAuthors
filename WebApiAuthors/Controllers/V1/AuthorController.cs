@@ -10,8 +10,11 @@ using WebApiAuthors.Utilities;
 namespace WebApiAuthors.Controllers.V1
 {
     [ApiController]
-    [Route("api/v1/[controller]")] //[controller] is changed for the prefix of the controller => route: 'api/Author'
+    //[Route("api/v1/[controller]")] //[controller] is changed for the prefix of the controller => route: 'api/Author'
+    [Route("api/[controller]")]
+    [IsPresentHeader("x-version", "1")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "IsAdmin")]
+    [ApiConventionType(typeof(DefaultApiConventions))] //To use conventions to document the most common response types for all the methods in this class
     public class AuthorController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -32,22 +35,33 @@ namespace WebApiAuthors.Controllers.V1
         /// <summary>
         /// Method to get all the authors in db
         /// </summary>
+        /// <param name="paginationDTO">Object to indicate the records to receive and the page from Query</param>
         /// <returns></returns>
         [HttpGet(Name = "getAuthorsv1")] //Get: api/author
         [AllowAnonymous]
         [ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
-        public async Task<ActionResult<List<AuthorDTO>>> Get()
+        public async Task<ActionResult<List<AuthorDTO>>> Get([FromQuery] PaginationDTO paginationDTO)
         {
             //For testing the Exception filter Uncomment
             //throw new NotImplementedException();
 
-            var authors = await _context.Author.ToListAsync();
+            var queryable = _context.Author.AsQueryable();
+            await HttpContext.InsertPaginationParamsInHeaders(queryable);
+
+            var authors = await queryable.OrderBy(author => author.A_Name).Page(paginationDTO).ToListAsync();
             return _mapper.Map<List<AuthorDTO>>(authors);
         }
 
+        /// <summary>
+        /// Method to get an Author by its Id
+        /// </summary>
+        /// <param name="id">Id of the author</param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "getAuthorv1")] //Get: api/author/{id}
         [AllowAnonymous]
         [ServiceFilter(typeof(HATEOASAuthorFilterAttribute))]
+        [ProducesResponseType(200)] //To document the posible response type of this endpoint
+        [ProducesResponseType(404)]
         public async Task<ActionResult<AuthorDTO_Book>> Get(int id)
         {
             var author = await _context.Author
