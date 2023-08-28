@@ -3,7 +3,7 @@ Proyecto WebApi realizado para pruebas, en el cual se pueden crear autores, libr
 
 ### Tecnologías Utilizadas
 :keyboard: C# 10  
-:keyboard: .Net 6
+:keyboard: .Net 6  
 :computer: Visual Studio 2022  
 
 ### :open_book: Configuración  
