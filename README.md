@@ -9,6 +9,6 @@ Proyecto WebApi realizado para pruebas, en el cual se pueden crear autores, libr
 ### :open_book: Configuración  
 1. En una carpeta del sistema ejecutar el comando :arrow_forward: git clone https://github.com/andresali1/WebApiAuthors.git
 2. Abrir la solución (WebApiAuthors.sln) con Visual Studio 2022:
-3. Ubicarse dentro de la carpeta "WebApiAuthors" y usando la consola del administrador de paquetes escribir el comando "Update-Database" si se usa Visual estudio, o si se usa dotnet cli usar el comando "dotnet ef database update"
+3. Ubicarse dentro de la carpeta "WebApiAuthors" y usando la consola del administrador de paquetes escribir el comando "Update-Database" si se usa Visual Studio, o si se usa dotnet cli usar el comando "dotnet ef database update"
 6.  Ejecutar el proyecto
 
